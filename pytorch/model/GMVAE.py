@@ -6,6 +6,8 @@
 Gaussian Mixture Variational Autoencoder for Unsupervised Clustering
 
 """
+import os.path
+
 import torch
 import numpy as np
 from torch import nn, optim
@@ -18,6 +20,7 @@ import matplotlib.pyplot as plt
 class GMVAE:
 
   def __init__(self, args):
+    self.model_path = args.model_path
     self.num_epochs = args.epochs
     self.cuda = args.cuda
     self.verbose = args.verbose
@@ -246,13 +249,31 @@ class GMVAE:
     train_history_acc, val_history_acc = [], []
     train_history_nmi, val_history_nmi = [], []
 
-    for epoch in range(1, self.num_epochs + 1):
+    start_epoch = 0
+    if os.path.exists(self.model_path):
+      checkpoint = torch.load(self.model_path)
+      self.network.load_state_dict(checkpoint['model_state_dict'])
+      optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+      start_epoch = checkpoint['epoch']
+      print("download model epoch "+str(start_epoch)+" successful!")
+    else:
+      print("train from nothing!")
+
+    for epoch in range(1+start_epoch, start_epoch + self.num_epochs + 1):
       train_loss, train_rec, train_gauss, train_cat, train_acc, train_nmi = self.train_epoch(optimizer, train_loader)
       val_loss, val_rec, val_gauss, val_cat, val_acc, val_nmi = self.test(val_loader, True)
 
+      if epoch%100==0:
+        torch.save({
+          'epoch': epoch,
+          'model_state_dict': self.network.state_dict(),
+          'optimizer_state_dict': optimizer.state_dict(),
+          'loss': self.losses,
+        }, self.model_path)
+        print("save model epoch "+str(epoch)+"successful!")
       # if verbose then print specific information about training
       if self.verbose == 1:
-        print("(Epoch %d / %d)" % (epoch, self.num_epochs) )
+        print("(Epoch %d / %d)" % (epoch, self.num_epochs+start_epoch) )
         print("Train - REC: %.5lf;  Gauss: %.5lf;  Cat: %.5lf;" % \
               (train_rec, train_gauss, train_cat))
         print("Valid - REC: %.5lf;  Gauss: %.5lf;  Cat: %.5lf;" % \

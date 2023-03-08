@@ -40,6 +40,8 @@ parser.add_argument('--gpuID', type=int, default=0,
                     help='set gpu id to use (default: 0)')
 
 ## Training
+parser.add_argument('--model_path',type=str,default="checkpoint/checkpoint.pth",
+                    help='path to save model (default="checkpoint")')
 parser.add_argument('--epochs', type=int, default=100,
                     help='number of total epochs to run (default: 200)')
 parser.add_argument('--batch_size', default=64, type=int,
