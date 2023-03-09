@@ -2,3 +2,4 @@ matplotlib
 scikit-learn
 scipy
 #-i https://pypi.tuna.tsinghua.edu.cn/simple
+#https://download.pytorch.org/whl/torch_stable.html
