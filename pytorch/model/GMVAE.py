@@ -282,7 +282,7 @@ class GMVAE:
               (train_acc, val_acc, train_nmi, val_nmi, train_loss, val_loss))
       else:
         print('(Epoch %d / %d) Train_Loss: %.3lf; Val_Loss: %.3lf   Train_ACC: %.3lf; Val_ACC: %.3lf   Train_NMI: %.3lf; Val_NMI: %.3lf' % \
-              (epoch, self.num_epochs, train_loss, val_loss, train_acc, val_acc, train_nmi, val_nmi))
+              (epoch, self.num_epochs+start_epoch, train_loss, val_loss, train_acc, val_acc, train_nmi, val_nmi))
 
       # decay gumbel temperature
       if self.decay_temp == 1:
